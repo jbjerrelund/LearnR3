@@ -1,3 +1,9 @@
+---
+editor_options: Julie, endocrinology
+  markdown: 
+    wrap: 72
+---
+
 TODO: Add more to the title of your project here
 
 # LearnR3:
@@ -8,8 +14,7 @@ This project...
 
 # Brief description of folder and file contents
 
-TODO: As project evolves, add brief description of what is inside the
-data, docs and R folders.
+TODO: As project evolves, add brief description of what is inside the data, docs and R folders.
 
 The following folders contain:
 
@@ -19,10 +24,7 @@ The following folders contain:
 
 # Installing project R package dependencies
 
-If dependencies have been managed by using
-`usethis::use_package("packagename")` through the `DESCRIPTION` file,
-installing dependencies is as easy as opening the
-`LearnR3.Rproj` file and running this command in the console:
+If dependencies have been managed by using `usethis::use_package("packagename")` through the `DESCRIPTION` file, installing dependencies is as easy as opening the `LearnR3.Rproj` file and running this command in the console:
 
 ```         
 # install.packages("pak")
@@ -33,6 +35,4 @@ You'll need to have remotes installed for this to work.
 
 # Resource
 
-For more information on this folder and file workflow and setup, check
-out the [prodigenr](https://rostools.github.io/prodigenr) online
-documentation.
+For more information on this folder and file workflow and setup, check out the [prodigenr](https://rostools.github.io/prodigenr) online documentation.
