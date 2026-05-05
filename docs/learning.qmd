@@ -1,14 +1,29 @@
 ---
 title: "Draft Quarto document"
-author: "Your Name"
+author: "Julie Bjerrelund"
 format: html
 ---
 
-## Header 1
+## Setup and maintain code
 
 ```{r setup}
-#| include: false
+library(tidyverse)
+library(here)
+library(snakecase) #snake case, all letters of the heading of the table will be low case letters separated by _. name_repair can update column names while we load it. more readable and best practice to use 
 ```
+
+## Importing new data 
+```{r}
+# here function, tells R to go back to where the project file is located.
+# %>% Pipe, command, shift, P
+# we only load in a small part of the dataset to actually be able to read it and see part of the dataset. we can use n_max to tell how many rows will be loaded 
+here("data-raw/nurses-stress/stress/5C/5C_1586886626/HR.csv.gz") %>% 
+  read_csv(show_col_types = FALSE, 
+           name_repair = to_snake_case, #printer ikke output af, hvad read_csv gætter på, at data er. 
+           n_max=100) # only import 100 rows of the dataset 
+
+```
+
 
 ```{r}
 # Code chunk
