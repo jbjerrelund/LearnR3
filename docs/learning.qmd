@@ -94,9 +94,9 @@ here("data-raw/nurses-stress/stress/5C/5C_1586886626/HR.csv.gz") |>
 #'
 #' @param file_path A path to a data file
 #'
-#' @returns outputs a data frame /tibble 
+#' @returns outputs a data frame /tibble
 read <- function(file_path) {
-  data <- file_path |> #this is the argument for the function, whatever path is put in, will be read in as a csv file. 
+  data <- file_path |> # this is the argument for the function, whatever path is put in, will be read in as a csv file.
     read_csv(
       show_col_types = FALSE,
       name_repair = to_snake_case,
@@ -107,11 +107,45 @@ read <- function(file_path) {
 ```
 
 ```{r}
-here("data-raw/nurses-stress/stress/5C/5C_1586886626/HR.csv.gz") %>% 
+here("data-raw/nurses-stress/stress/5C/5C_1586886626/HR.csv.gz") %>%
   read()
 ```
 ```{r}
-here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") %>% 
+here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") %>%
   read()
 ```
 
+##Rewrite function code, so it can contain more or less rows.
+```{r}
+#' Read in one nurses' stress data file 
+#'
+#' @param file_path A path to data file
+#' @param max_rows Maximum of rows to read
+#'
+#' @returns Dataframe
+
+read <- function(file_path, max_rows=100) { #default argument, so if we dont specify max rows, this will be the default¨
+  data <- file_path |> # this is the argument for the function, whatever path is put in, will be read in as a csv file.
+    read_csv(
+      show_col_types = FALSE,
+      name_repair = to_snake_case,
+      n_max = max_rows
+    )
+  return(data)
+}
+```
+
+```{r}
+# Outputs only 100 rows
+here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
+  read()
+
+# Outputs only 1000 rows
+here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
+  read(max_rows = 1000)
+
+# Outputs all rows (`Inf` means infinity)
+here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
+  read(max_rows = Inf)
+```
+## DESCRIPTION FILE - where information about the project is written. metadata file found within a Rproject. We can add package to it in order for others and your self to know. e.g. we are dependent on the "here" packages
