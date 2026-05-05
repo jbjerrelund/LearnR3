@@ -9,11 +9,14 @@ format: html
 ```{r setup}
 library(tidyverse)
 library(here)
-library(snakecase) # snake case, all letters of the heading of the table will be low case letters separated by _. name_repair can update column names while we load it. more readable and best practice to use
+library(snakecase)
+source(here("R/functions.R"))
 ```
 
 ## Importing new data 
 ```{r}
+#|eval: false
+
 # here function, tells R to go back to where the project file is located.
 # %>% Pipe, command, shift, P
 # we only load in a small part of the dataset to actually be able to read it and see part of the dataset. we can use n_max to tell how many rows will be loaded
@@ -28,6 +31,7 @@ here("data-raw/nurses-stress/stress/5C/5C_1586886626/HR.csv.gz") %>%
 ##Exercise: Reading other files 
 
 ```{r}
+#|eval: false
 here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") %>%
   read_csv(
     show_col_types = FALSE,
@@ -35,6 +39,8 @@ here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") %>%
   )
 ```
 ```{r}
+#|eval: false
+
 here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") %>%
   read_csv(
     show_col_types = FALSE,
@@ -82,6 +88,8 @@ add_numbers <- function(num1, num2) {
 
 ## Import 5C's HR data with a function
 ```{r}
+#|eval: false
+
 here("data-raw/nurses-stress/stress/5C/5C_1586886626/HR.csv.gz") |>
   read_csv(
     show_col_types = FALSE,
@@ -90,6 +98,7 @@ here("data-raw/nurses-stress/stress/5C/5C_1586886626/HR.csv.gz") |>
   )
 ```
 ```{r}
+#|eval: false
 #' Read in one nurses' stress data file.
 #'
 #' @param file_path A path to a data file
@@ -117,18 +126,20 @@ here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") %>%
 
 ##Rewrite function code, so it can contain more or less rows.
 ```{r}
-#' Read in one nurses' stress data file 
+#|eval: false
+
+#' Read in one nurses' stress data file
 #'
 #' @param file_path A path to data file
 #' @param max_rows Maximum of rows to read
 #'
 #' @returns Dataframe
 
-read <- function(file_path, max_rows=100) { #default argument, so if we dont specify max rows, this will be the default¨
+read <- function(file_path, max_rows = 100) { # default argument, so if we dont specify max rows, this will be the default¨
   data <- file_path |> # this is the argument for the function, whatever path is put in, will be read in as a csv file.
-    read_csv(
+    readr::read_csv(
       show_col_types = FALSE,
-      name_repair = to_snake_case,
+      name_repair = snakecase::to_snake_case,
       n_max = max_rows
     )
   return(data)
@@ -148,4 +159,5 @@ here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
 here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
   read(max_rows = Inf)
 ```
-## DESCRIPTION FILE - where information about the project is written. metadata file found within a Rproject. We can add package to it in order for others and your self to know. e.g. we are dependent on the "here" packages
+## DESCRIPTION FILE - where information about the project is written. metadata file found within a Rproject. We can add package to it in order for others and your self to know. e.g. we are dependent on the "here" packages.
+# we do that with this code: usethis::use_package("here") in the consol. "here" refers to the package we are dependent on, will appear in the DESCRIPTION file. 
