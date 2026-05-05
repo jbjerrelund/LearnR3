@@ -57,3 +57,26 @@ here("data-raw/nurses-stress/stress/6B/6B_1587569373/EDA.csv.gz") %>%
     n_max = 100
   )
 ```
+
+
+##Creating our first function, making a function to add numbers 
+#This is the structure of a function:
+#name <- function(argument1, argument2) 
+# body of function, output <- ... return(output)
+
+```{r}
+#' Add two numbers together
+#'
+#' @param num1 A number here.
+#' @param num2 A number here.
+#'
+#' @returns Returns the sum of two numbers (describe what the function returns)
+#'
+add_numbers <- function(num1, num2) {
+  added <- num1 + num2
+  return(added) # this function should return this output
+}
+```
+
+#Roxygen - a way to document what you are doing. you have to be somewhere within the function with the curser. Delete export and examples, only needed if you make a package 
+
