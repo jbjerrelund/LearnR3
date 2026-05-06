@@ -188,3 +188,32 @@ hr_data <- hr_files %>%
 
 hr_data
 ```
+
+## Exercise: Convert map to function and use on sleep
+
+```{r}
+
+#|eval: false 
+
+
+#' Function to read in an combine all data 
+#'
+#' @param Name of the files in the sub-folder we want to read in data from 
+#'
+#' @returns A combined tibble with wanted data 
+
+read_all <- function(filename) {
+  files <- here::here("data-raw/nurses-stress/") |>
+    fs::dir_ls(regexp = filename, recurse = TRUE) #indlæser alle filerne
+
+  data <- files %>% 
+    purrr::map(read) %>% 
+    purrr::list_rbind(names_to = "file_path_id") #binder alle filerne sammen og opdeler på file ID, som lige nu er lidt for langt, men det bliver korrigeret ved næste session
+ 
+  return(read_all)
+}
+
+read_all("HR.csv.gz")
+read_all("IBI.csv.gz")
+```
+

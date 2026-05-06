@@ -15,3 +15,13 @@ read <- function(file_path, max_rows = 100) { # default argument, so if we dont 
   return(data)
 }
 
+
+read_all <- function(filename) {
+  files <- here::here("data-raw/nurses-stress/") %>%
+    fs::dir_ls(regexp = filename, recurse = TRUE)
+
+  data <- files %>%
+    purrr::map(read) %>%
+    purrr::list_rbind(names_to = "file_path_id")
+  return(read_all)
+}
