@@ -15,7 +15,8 @@ library(stringr)
 source(here("R/functions.R"))
 ```
 
-## Importing new data 
+## Importing new data
+
 ```{r}
 #|eval: false
 
@@ -30,7 +31,7 @@ here("data-raw/nurses-stress/stress/5C/5C_1586886626/HR.csv.gz") %>%
   ) # only import 100 rows of the dataset
 ```
 
-##Exercise: Reading other files 
+##Exercise: Reading other files
 
 ```{r}
 #|eval: false
@@ -40,6 +41,7 @@ here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") %>%
     name_repair = to_snake_case
   )
 ```
+
 ```{r}
 #|eval: false
 
@@ -50,6 +52,7 @@ here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") %>%
     n_max = 100
   )
 ```
+
 ```{r}
 here("data-raw/nurses-stress/stress/6B/6B_1587569373/EDA.csv.gz") %>%
   read_csv(
@@ -57,6 +60,7 @@ here("data-raw/nurses-stress/stress/6B/6B_1587569373/EDA.csv.gz") %>%
     name_repair = to_snake_case, # printer ikke output af, hvad read_csv gætter på, at data er.
   )
 ```
+
 ```{r}
 here("data-raw/nurses-stress/stress/6B/6B_1587569373/EDA.csv.gz") %>%
   read_csv(
@@ -66,11 +70,7 @@ here("data-raw/nurses-stress/stress/6B/6B_1587569373/EDA.csv.gz") %>%
   )
 ```
 
-
-##Creating our first function, making a function to add numbers 
-#This is the structure of a function:
-#name <- function(argument1, argument2) 
-# body of function, output <- ... return(output)
+##Creating our first function, making a function to add numbers #This is the structure of a function: #name \<- function(argument1, argument2) \# body of function, output \<- ... return(output)
 
 ```{r}
 #' Add two numbers together
@@ -86,9 +86,10 @@ add_numbers <- function(num1, num2) {
 }
 ```
 
-#Roxygen - a way to document what you are doing. you have to be somewhere within the function with the curser. Delete export and examples, only needed if you make a package 
+#Roxygen - a way to document what you are doing. you have to be somewhere within the function with the curser. Delete export and examples, only needed if you make a package
 
 ## Import 5C's HR data with a function
+
 ```{r}
 #|eval: false
 
@@ -99,6 +100,7 @@ here("data-raw/nurses-stress/stress/5C/5C_1586886626/HR.csv.gz") |>
     n_max = 100
   )
 ```
+
 ```{r}
 #|eval: false
 #' Read in one nurses' stress data file.
@@ -121,12 +123,14 @@ read <- function(file_path) {
 here("data-raw/nurses-stress/stress/5C/5C_1586886626/HR.csv.gz") %>%
   read()
 ```
+
 ```{r}
 here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") %>%
   read()
 ```
 
 ##Rewrite function code, so it can contain more or less rows.
+
 ```{r}
 #|eval: false
 
@@ -161,14 +165,15 @@ here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
 here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
   read(max_rows = Inf)
 ```
+
 ## DESCRIPTION FILE - where information about the project is written. metadata file found within a Rproject. We can add package to it in order for others and your self to know. e.g. we are dependent on the "here" packages.
-# we do that with this code: usethis::use_package("here") in the consol. "here" refers to the package we are dependent on, will appear in the DESCRIPTION file. 
 
-##Day 2 - mapping/functionals 
-# we want to use map and thereby read in all 3000 files from the dataset. we need a list of all the filepaths we want 
+# we do that with this code: usethis::use_package("here") in the consol. "here" refers to the package we are dependent on, will appear in the DESCRIPTION file.
 
+##Day 2 - mapping/functionals \# we want to use map and thereby read in all 3000 files from the dataset. we need a list of all the filepaths we want
 
 ## Using map
+
 ```{r}
 hr_files <- here("data-raw/nurses-stress/") %>%
   dir_ls(regexp = "HR.csv.gz", recurse = TRUE) # dir_ls er en måde at vise, hvilke filer der er i directory, altså den destination der anvendes til here functionen. Det printes ikke, med mindre der skrives hr_files til sidst i koden. recurse bruger vi, da alle filerne ikke er i den samme mappe, det er en måde at kigge i alle undermapperne.
@@ -180,7 +185,8 @@ hr_data <- hr_files %>%
 
 hr_data
 ```
-#We want to combine the data to get one dataframe, either row or column bind - we want to bind rows, because columns are the same for all the nurses 
+
+#We want to combine the data to get one dataframe, either row or column bind - we want to bind rows, because columns are the same for all the nurses
 
 ```{r}
 hr_data <- hr_files %>%
@@ -207,7 +213,7 @@ read_all <- function(filename) {
     purrr::map(read) %>%
     purrr::list_rbind(names_to = "file_path_id") # binder alle filerne sammen og opdeler på file ID, som lige nu er lidt for langt, men det bliver korrigeret ved næste session
 
-  return(read_all)
+  return(data)
 }
 
 hr_data <- read_all("HR.csv.gz")
@@ -225,6 +231,7 @@ survey_data <- here("data-raw/nurses-stress/survey-results.csv.gz") |>
 hr_data
 survey_data
 ```
+
 ```{r}
 hr_data %>%
   mutate(
@@ -256,4 +263,71 @@ get_participant_id <- function(data) {
 
   return(data_with_id)
 }
+```
+
+# Use lookaround from the stringr in order to get rid of /stress/ and / at the beginning, a more simple code:
+
+```{r}
+#| eval: false
+
+get_participant_id <- function(data) {
+  data_with_id <- data |>
+    dplyr::mutate(
+      id = stringr::str_extract(
+        file_path_id,
+        "(?<=/stress/)[:alnum:]{2}(?=/)"
+      ),
+      .before = file_path_id
+    ) |>
+    dplyr::select(-file_path_id)
+  return(data_with_id)
+}
+```
+
+##Working with across
+
+```{r}
+hr_data <- read_all("HR.csv.gz") %>%
+  get_participant_id()
+
+hr_data
+```
+
+```{r}
+hr_data |>
+  summarise(across(where(is.numeric), list(
+    mean = mean,
+    median = median,
+    sd = sd
+  )))
+```
+##Working with dates
+```{r}
+hr_data %>%
+  mutate(
+    datetime = round_date(collection_datetime,
+      unit = "minute"
+    ),
+    .before = "collection_datetime"
+  )
+```
+
+
+##Summarising by groups 
+
+```{r}
+hr_data |>
+  mutate(
+    collection_datetime = lubridate::round_date(
+      collection_datetime,
+      unit = "minute"
+    )
+  ) |>
+  summarise(
+    across(
+      where(is.numeric),
+      list(mean = mean, sd = sd, median = median)
+    ),
+    .by = c(id, collection_datetime) # this is group by, we use c. because we want combination
+  )
 ```
