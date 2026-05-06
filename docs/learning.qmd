@@ -10,6 +10,7 @@ format: html
 library(tidyverse)
 library(here)
 library(snakecase)
+library(fs)
 source(here("R/functions.R"))
 ```
 
@@ -161,3 +162,29 @@ here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
 ```
 ## DESCRIPTION FILE - where information about the project is written. metadata file found within a Rproject. We can add package to it in order for others and your self to know. e.g. we are dependent on the "here" packages.
 # we do that with this code: usethis::use_package("here") in the consol. "here" refers to the package we are dependent on, will appear in the DESCRIPTION file. 
+
+##Day 2 - mapping/functionals 
+# we want to use map and thereby read in all 3000 files from the dataset. we need a list of all the filepaths we want 
+
+
+## Using map
+```{r}
+hr_files <- here("data-raw/nurses-stress/") %>%
+  dir_ls(regexp = "HR.csv.gz", recurse = TRUE) # dir_ls er en måde at vise, hvilke filer der er i directory, altså den destination der anvendes til here functionen. Det printes ikke, med mindre der skrives hr_files til sidst i koden. recurse bruger vi, da alle filerne ikke er i den samme mappe, det er en måde at kigge i alle undermapperne.
+```
+
+```{r}
+hr_data <- hr_files %>%
+  map(read) # NO BRACKETS here
+
+hr_data
+```
+#We want to combine the data to get one dataframe, either row or column bind - we want to bind rows, because columns are the same for all the nurses 
+
+```{r}
+hr_data <- hr_files %>%
+  map(read) %>%
+  list_rbind(names_to = "file_path_id") # to list who is who
+
+hr_data
+```
