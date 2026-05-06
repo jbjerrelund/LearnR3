@@ -11,6 +11,7 @@ library(tidyverse)
 library(here)
 library(snakecase)
 library(fs)
+library(stringr)
 source(here("R/functions.R"))
 ```
 
@@ -192,28 +193,67 @@ hr_data
 ## Exercise: Convert map to function and use on sleep
 
 ```{r}
-
-#|eval: false 
-
-
-#' Function to read in an combine all data 
+#' Function to read in an combine all data
 #'
-#' @param Name of the files in the sub-folder we want to read in data from 
+#' @param Name of the files in the sub-folder we want to read in data from
 #'
-#' @returns A combined tibble with wanted data 
+#' @returns A combined tibble with wanted data
 
 read_all <- function(filename) {
-  files <- here::here("data-raw/nurses-stress/") |>
-    fs::dir_ls(regexp = filename, recurse = TRUE) #indlæser alle filerne
+  files <- here::here("data-raw/nurses-stress/") %>%
+    fs::dir_ls(regexp = filename, recurse = TRUE) # indlæser alle filerne
 
-  data <- files %>% 
-    purrr::map(read) %>% 
-    purrr::list_rbind(names_to = "file_path_id") #binder alle filerne sammen og opdeler på file ID, som lige nu er lidt for langt, men det bliver korrigeret ved næste session
- 
+  data <- files %>%
+    purrr::map(read) %>%
+    purrr::list_rbind(names_to = "file_path_id") # binder alle filerne sammen og opdeler på file ID, som lige nu er lidt for langt, men det bliver korrigeret ved næste session
+
   return(read_all)
 }
 
-read_all("HR.csv.gz")
-read_all("IBI.csv.gz")
+hr_data <- read_all("HR.csv.gz")
+IBI_data <- read_all("IBI.csv.gz")
 ```
 
+## Inspecting the data
+
+```{r}
+hr_data <- read_all("HR.csv.gz")
+
+survey_data <- here("data-raw/nurses-stress/survey-results.csv.gz") |>
+  read()
+
+hr_data
+survey_data
+```
+```{r}
+hr_data %>%
+  mutate(
+    id = str_extract(
+      file_path_id,
+      pattern = "/stress/[:alnum:]{2}/" # alnum finder både bogstaver og tal, 2 angiver at der skal være to tegn, fx 15 eller 5C.
+    ) %>%
+      str_remove("/stress/") %>%
+      str_remove("/"),
+    .before = file_path_id # telling us how are columns are organised.
+  ) %>%
+  select(-file_path_id)
+```
+
+```{r}
+#| eval: false
+get_participant_id <- function(data) {
+  data_with_id <- data %>%
+    dplyr::mutate(
+      id = stringr::str_extract(
+        file_path_id,
+        "/stress/[[:alnum:]]{2}/"
+      ) %>%
+        stringr::str_remove("/stress/") %>%
+        stringr::str_remove("/"),
+      .before = file_path_id
+    ) %>%
+    dplyr::select(-file_path_id)
+
+  return(data_with_id)
+}
+```
