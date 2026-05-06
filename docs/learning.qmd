@@ -268,8 +268,6 @@ get_participant_id <- function(data) {
 # Use lookaround from the stringr in order to get rid of /stress/ and / at the beginning, a more simple code:
 
 ```{r}
-#| eval: false
-
 get_participant_id <- function(data) {
   data_with_id <- data |>
     dplyr::mutate(
@@ -330,4 +328,30 @@ hr_data |>
     ),
     .by = c(id, collection_datetime) # this is group by, we use c. because we want combination
   )
+```
+
+```{r}
+#' Summarise data in a tibble with rounded timepoints
+#'
+#' @param Dataframe with collection_datetime and columns
+#'
+#' @returns Tibble, summarised dataframe
+
+summarise_by_datetime <- function(data) {
+  summarised_data <- data |>
+    dplyr::mutate(
+      collection_datetime = lubridate::round_date(
+        collection_datetime,
+        unit = "minute"
+      )
+    ) |>
+    dplyr::summarise(
+      dplyr::across(
+        tidyselect::where(is.numeric),
+        list(mean = mean, sd = sd, median = median)
+      ),
+      .by = c(id, collection_datetime)
+    )
+  return(summarised_data)
+}
 ```
