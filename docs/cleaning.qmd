@@ -7,6 +7,11 @@ format: html
 ## Header 1
 
 ```{r setup}
+library(tidyverse)
+library(here)
+library(snakecase)
+library(fs)
+library(stringr)
 source(here::here("R/functions.R"))
 ```
 
@@ -26,7 +31,7 @@ ibi_data <- read_all("IBI.csv.gz") |>
 
 ##Prepare Temp data
 ```{r}
-Temp_data <- read_all("TEMP.csv.gz") |>
+temp_data <- read_all("TEMP.csv.gz") |>
   get_participant_id() |>
   summarise_by_datetime()
 ```
@@ -40,7 +45,7 @@ bvp_data <- read_all("BVP.csv.gz") |>
 
 ##Prepare EDA data
 ```{r}
-hr_data <- read_all("HR.csv.gz") |>
+eda_data <- read_all("EDA.csv.gz") |>
   get_participant_id() |>
   summarise_by_datetime()
 ```
@@ -54,3 +59,19 @@ survey_tidy <- here::here("data-raw/nurses-stress/survey-results.csv.gz") |>
 survey_long <- survey_tidy |>
   survey_to_long()
 ```
+
+## Joining datasets.
+```{r}
+nurses_stress <- survey_long |>
+  full_join(survey_tidy) |>
+  full_join(hr_data) |>
+  full_join(ibi_data) |>
+  full_join(temp_data) |>
+  full_join(bvp_data)|>
+  full_join (eda_data)
+```
+##Save dataset
+```{r}
+write_csv(nurses_stress, here("data/nurses-stress.csv"))
+```
+
